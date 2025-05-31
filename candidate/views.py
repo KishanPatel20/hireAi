@@ -260,20 +260,25 @@ class CandidateViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def upload_resume(self, request):
         """
-        Upload and process resume, then create a completely new candidate profile.
-        This will delete the old profile and create a new one with the extracted information.
+        Upload and process resume, then create or update candidate profile.
+        If no profile exists, it will create a new one with the extracted information.
         """
         try:
-            # Get the old candidate profile
-            old_candidate = Candidate.objects.get(user=request.user)
-            # Store the user reference
-            user = old_candidate.user
-            # Delete the old profile and all its related data
-            old_candidate.delete()
-        except Candidate.DoesNotExist:
+            # Try to get existing profile, but don't require it
+            try:
+                old_candidate = Candidate.objects.get(user=request.user)
+                # Store the user reference
+                user = old_candidate.user
+                # Delete the old profile and all its related data if it exists
+                old_candidate.delete()
+            except Candidate.DoesNotExist:
+                # If no profile exists, use the current user
+                user = request.user
+
+        except Exception as e:
             return Response(
-                {'error': 'Candidate profile not found'},
-                status=status.HTTP_404_NOT_FOUND
+                {'error': f'Error handling existing profile: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
         if 'resume' not in request.FILES:
@@ -402,7 +407,7 @@ class CandidateViewSet(viewsets.ModelViewSet):
                 print("No projects found in resume data")
 
             return Response({
-                'message': 'Resume uploaded and processed successfully. Profile has been completely recreated.',
+                'message': 'Resume uploaded and processed successfully. Profile has been created.',
                 'resume_url': candidate.resume.url,
                 'profile_updated': True,
                 'projects_created': len(resume_data.projects) if resume_data.projects else 0
