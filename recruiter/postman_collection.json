@@ -1,0 +1,520 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "HireAI Recruiter API",
+		"description": "API collection for recruiter profile and workflow management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Recruiter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"recruiter1\",\n    \"email\": \"recruiter@company.com\",\n    \"password\": \"recruiterpass123\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Recruiter\",\n    \"company_name\": \"Tech Solutions Inc.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/register/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "register"]
+						},
+						"description": "Register a new recruiter account"
+					}
+				},
+				{
+					"name": "Login Recruiter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"recruiter1\",\n    \"password\": \"recruiterpass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/login/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "login"]
+						},
+						"description": "Login and get authentication token"
+					}
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/auth/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "auth", "profile"]
+						},
+						"description": "Get authenticated user's profile"
+					}
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/auth/profile/update/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "auth", "profile", "update"]
+						},
+						"description": "Update authenticated user's profile"
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"recruiterpass123\",\n    \"new_password\": \"newpass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/auth/change-password/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "auth", "change-password"]
+						},
+						"description": "Change user password"
+					}
+				}
+			]
+		},
+		{
+			"name": "Recruiter Profile",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/recruiters/me/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "recruiters", "me"]
+						},
+						"description": "Get authenticated recruiter's profile"
+					}
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone_number\": \"+1234567890\",\n    \"bio\": \"Experienced tech recruiter specializing in AI/ML roles\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/recruiters/me/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "recruiters", "me"]
+						},
+						"description": "Update authenticated recruiter's profile"
+					}
+				},
+				{
+					"name": "Get Dashboard Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/recruiters/me/dashboard_overview/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "recruiters", "me", "dashboard_overview"]
+						},
+						"description": "Get dashboard overview data"
+					}
+				}
+			]
+		},
+		{
+			"name": "Departments",
+			"item": [
+				{
+					"name": "List Departments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/departments/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "departments"]
+						},
+						"description": "List all departments for the authenticated recruiter"
+					}
+				},
+				{
+					"name": "Create Department",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Engineering\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/departments/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "departments"]
+						},
+						"description": "Create a new department"
+					}
+				},
+				{
+					"name": "Update Department",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Software Engineering\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/departments/{{department_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "departments", "{{department_id}}"]
+						},
+						"description": "Update a department's name"
+					}
+				},
+				{
+					"name": "Delete Department",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/departments/{{department_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "departments", "{{department_id}}"]
+						},
+						"description": "Delete a department"
+					}
+				}
+			]
+		},
+		{
+			"name": "Active Roles",
+			"item": [
+				{
+					"name": "List Active Roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/active-roles/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "active-roles"]
+						},
+						"description": "List all active roles for the authenticated recruiter"
+					}
+				},
+				{
+					"name": "Create Active Role",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Senior Python Developer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/active-roles/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "active-roles"]
+						},
+						"description": "Create a new active role"
+					}
+				},
+				{
+					"name": "Update Active Role",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lead Python Developer\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/active-roles/{{active_role_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "active-roles", "{{active_role_id}}"]
+						},
+						"description": "Update an active role's name"
+					}
+				},
+				{
+					"name": "Delete Active Role",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/active-roles/{{active_role_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "active-roles", "{{active_role_id}}"]
+						},
+						"description": "Delete an active role"
+					}
+				}
+			]
+		},
+		{
+			"name": "Workflows",
+			"item": [
+				{
+					"name": "List Workflows",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/workflows/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "workflows"]
+						},
+						"description": "List all workflows for the authenticated recruiter"
+					}
+				},
+				{
+					"name": "Create Workflow from Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Python Dev Search\",\n    \"initial_user_request\": \"Find me senior Python developers with Django and AWS experience\",\n    \"system_response_summary\": \"Found 15 candidates matching your criteria. Key skills: Python, Django, AWS.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/workflows/create_from_chat/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "workflows", "create_from_chat"]
+						},
+						"description": "Create a new workflow from chat interaction"
+					}
+				},
+				{
+					"name": "Add Chat Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sender\": \"user\",\n    \"message_content\": \"Can you filter them by those with experience in MLOps tools?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/workflows/{{workflow_id}}/chat/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "workflows", "{{workflow_id}}", "chat"]
+						},
+						"description": "Add a new message to a workflow's chat"
+					}
+				},
+				{
+					"name": "Get Chat History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/workflows/{{workflow_id}}/chat_history/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "workflows", "{{workflow_id}}", "chat_history"]
+						},
+						"description": "Get the chat history for a specific workflow"
+					}
+				},
+				{
+					"name": "Delete Workflow",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/recruiter/workflows/{{workflow_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "workflows", "{{workflow_id}}"]
+						},
+						"description": "Delete a workflow"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "your_auth_token_here",
+			"type": "string"
+		},
+		{
+			"key": "department_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "active_role_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "workflow_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+} 
