@@ -23,6 +23,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('candidate.urls')), # Your app's API URLs
+    path('recruiter/', include('recruiter.urls')), # Your app's API URLs
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'), # Simple token authentication
 ]
 
