@@ -7,6 +7,7 @@ router.register(r'recruiters', views.RecruiterProfileViewSet, basename='recruite
 router.register(r'departments', views.DepartmentViewSet, basename='department')
 router.register(r'active-roles', views.ActiveRoleViewSet, basename='active-role')
 router.register(r'workflows', views.WorkflowViewSet, basename='workflow')
+router.register(r'selected-candidates', views.SelectedCandidateViewSet, basename='selected-candidate')
 
 urlpatterns = [
     path('', include(router.urls)),

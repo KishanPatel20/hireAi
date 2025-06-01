@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import RecruiterProfile, Department, ActiveRole, Workflow, ConversationTurn
+from .models import RecruiterProfile, Department, ActiveRole, Workflow, ConversationTurn, SelectedCandidate, Candidate
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -155,3 +155,27 @@ class WorkflowSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['recruiter'] = self.context['request'].user.recruiterprofile
         return super().create(validated_data)
+
+class SelectedCandidateSerializer(serializers.ModelSerializer):
+    candidate_token = serializers.SerializerMethodField()
+    candidate_email = serializers.SerializerMethodField()
+    candidate_name = serializers.SerializerMethodField()
+    candidate = serializers.PrimaryKeyRelatedField(queryset=Candidate.objects.all(), write_only=True)
+
+    class Meta:
+        model = SelectedCandidate
+        fields = [
+            'id', 'recruiter', 'candidate',
+            'candidate_token', 'candidate_email', 'candidate_name', 'selected_at'
+        ]
+        read_only_fields = ['id', 'selected_at', 'recruiter']
+
+    def get_candidate_token(self, obj):
+        user = obj.candidate.user
+        return getattr(user.auth_token, 'key', None)
+
+    def get_candidate_email(self, obj):
+        return obj.candidate.user.email
+
+    def get_candidate_name(self, obj):
+        return obj.candidate.name

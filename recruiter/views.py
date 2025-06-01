@@ -6,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Count
-from .models import RecruiterProfile, Department, ActiveRole, Workflow, ConversationTurn
+from .models import RecruiterProfile, Department, ActiveRole, Workflow, ConversationTurn, SelectedCandidate
 from .serializers import *
 
 class IsRecruiter(permissions.BasePermission):
@@ -211,3 +211,40 @@ class ChangePasswordView(generics.UpdateAPIView):
             'message': 'Password updated successfully',
             'token': token.key
         })
+
+class SelectedCandidateViewSet(viewsets.ModelViewSet):
+    serializer_class = SelectedCandidateSerializer
+    permission_classes = [permissions.IsAuthenticated, IsRecruiter]
+
+    def get_queryset(self):
+        return SelectedCandidate.objects.filter(recruiter=self.request.user.recruiterprofile)
+
+    def perform_create(self, serializer):
+        serializer.save(recruiter=self.request.user.recruiterprofile)
+
+    def create(self, request, *args, **kwargs):
+        candidate_token = request.data.get('candidate_token')
+        from rest_framework.authtoken.models import Token
+        from candidate.models import Candidate
+
+        if not candidate_token:
+            return Response({'error': 'You must provide candidate_token.'}, status=400)
+
+        try:
+            user = Token.objects.get(key=candidate_token).user
+            print(user)
+        except Token.DoesNotExist:
+            return Response({'error': 'Invalid candidate token (no user found).'}, status=400)
+
+        try:
+            candidate = Candidate.objects.get(user=user)
+            print(candidate)
+        except Candidate.DoesNotExist:
+            return Response({'error': 'No Candidate profile found for this user.'}, status=400)
+
+        serializer = self.get_serializer(data={'candidate': candidate.id})
+        print(serializer)
+        serializer.is_valid(raise_exception=True)
+        print(serializer)
+        serializer.save(recruiter=request.user.recruiterprofile)
+        return Response(serializer.data, status=201)

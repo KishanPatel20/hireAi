@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from candidate.models import Candidate  # Add this import at the top
 
 class RecruiterProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -96,3 +97,14 @@ class ConversationTurn(models.Model):
 
     def __str__(self):
         return f"{self.sender} - {self.workflow.name} - {self.timestamp}"
+
+class SelectedCandidate(models.Model):
+    recruiter = models.ForeignKey(RecruiterProfile, on_delete=models.CASCADE, related_name='selected_candidates')
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='selected_by_recruiters')
+    selected_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('recruiter', 'candidate')
+
+    def __str__(self):
+        return f"{self.recruiter} selected {self.candidate}"
