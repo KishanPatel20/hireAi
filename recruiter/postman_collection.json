@@ -162,7 +162,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"phone_number\": \"+1234567890\",\n    \"bio\": \"Experienced tech recruiter specializing in AI/ML roles\"\n}"
+							"raw": "{\n    \"company_name\": \"TechCorp Inc.\",\n    \"phone_number\": \"+1 (555) 123-4567\",\n    \"bio\": \"Senior recruiter with 10 years of experience.\",\n    \"industry\": \"Technology\",\n    \"website\": \"https://techcorp.com\",\n    \"company_size\": \"500-1000 employees\",\n    \"founded\": \"2010\",\n    \"headquarters\": \"San Francisco, CA\",\n    \"company_description\": \"Leading technology company specializing in AI and machine learning solutions.\",\n    \"job_title\": \"Senior Technical Recruiter\",\n    \"years_of_experience\": \"10\",\n    \"linkedin_profile\": \"https://linkedin.com/in/johnsmith\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/recruiter/recruiters/me/",
@@ -188,6 +188,32 @@
 							"path": ["recruiter", "recruiters", "me", "dashboard_overview"]
 						},
 						"description": "Get dashboard overview data"
+					}
+				},
+				{
+					"name": "Create My Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"company_name\": \"TechCorp Inc.\",\n    \"phone_number\": \"+1 (555) 123-4567\",\n    \"bio\": \"Senior recruiter with 10 years of experience.\",\n    \"industry\": \"Technology\",\n    \"website\": \"https://techcorp.com\",\n    \"company_size\": \"500-1000 employees\",\n    \"founded\": \"2010\",\n    \"headquarters\": \"San Francisco, CA\",\n    \"company_description\": \"Leading technology company specializing in AI and machine learning solutions.\",\n    \"job_title\": \"Senior Technical Recruiter\",\n    \"years_of_experience\": \"10\",\n    \"linkedin_profile\": \"https://linkedin.com/in/johnsmith\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/recruiter/recruiters/me/",
+							"host": ["{{base_url}}"],
+							"path": ["recruiter", "recruiters", "me"]
+						},
+						"description": "Create a new recruiter profile with full company and personal info."
 					}
 				}
 			]

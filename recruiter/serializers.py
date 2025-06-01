@@ -62,7 +62,12 @@ class RecruiterProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecruiterProfile
-        fields = ('id', 'user', 'company_name', 'phone_number', 'bio', 'created_at', 'updated_at')
+        fields = (
+            'id', 'user', 'company_name', 'phone_number', 'bio',
+            'industry', 'website', 'company_size', 'founded', 'headquarters', 'company_description',
+            'job_title', 'years_of_experience', 'linkedin_profile',
+            'created_at', 'updated_at'
+        )
         read_only_fields = ('created_at', 'updated_at')
 
 class RecruiterProfileUpdateSerializer(serializers.ModelSerializer):

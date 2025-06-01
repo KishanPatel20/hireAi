@@ -32,19 +32,28 @@ class RecruiterProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return RecruiterProfile.objects.filter(user=self.request.user)
 
-    @action(detail=False, methods=['get', 'patch'])
+    @action(detail=False, methods=['get', 'patch', 'post'])
     def me(self, request):
-        profile = get_object_or_404(RecruiterProfile, user=request.user)
-        
         if request.method == 'GET':
+            profile = get_object_or_404(RecruiterProfile, user=request.user)
             serializer = self.get_serializer(profile)
             return Response(serializer.data)
-        
         elif request.method == 'PATCH':
+            profile = get_object_or_404(RecruiterProfile, user=request.user)
             serializer = self.get_serializer(profile, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+        elif request.method == 'POST':
+            # Only allow creation if profile does not exist
+            if RecruiterProfile.objects.filter(user=request.user).exists():
+                return Response({'error': 'Profile already exists for this user.'}, status=status.HTTP_400_BAD_REQUEST)
+            data = request.data.copy()
+            data['user'] = request.user.id
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['get'])
     def dashboard_overview(self, request):
