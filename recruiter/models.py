@@ -25,6 +25,8 @@ class RecruiterProfile(models.Model):
 class Department(models.Model):
     name = models.CharField(max_length=100)
     recruiter = models.ForeignKey(RecruiterProfile, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+    head_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -35,16 +37,28 @@ class Department(models.Model):
         return f"{self.name} - {self.recruiter.company_name}"
 
 class ActiveRole(models.Model):
-    name = models.CharField(max_length=255)
+    LEVEL_CHOICES = [
+        ('Junior', 'Junior'),
+        ('Mid', 'Mid'),
+        ('Senior', 'Senior'),
+    ]
+    STATUS_CHOICES = [
+        ('Active', 'Active'),
+        ('Inactive', 'Inactive'),
+    ]
+    title = models.CharField(max_length=255)
     recruiter = models.ForeignKey(RecruiterProfile, on_delete=models.CASCADE)
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True)
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='Mid')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('name', 'recruiter')
+        unique_together = ('title', 'recruiter')
 
     def __str__(self):
-        return f"{self.name} - {self.recruiter.company_name}"
+        return f"{self.title} - {self.recruiter.company_name}"
 
 class Workflow(models.Model):
     recruiter = models.ForeignKey(RecruiterProfile, on_delete=models.CASCADE)

@@ -2,7 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .profile_embeddings import update_profile_embeddings, search_candidates
+from rest_framework.authtoken.models import Token
+from .profile_embeddings import ProfileEmbeddingManager, search_candidates
 from .models import Candidate
 
 @api_view(['POST'])
@@ -11,13 +12,60 @@ def update_embeddings(request):
     """
     Update embeddings for a candidate profile.
     This endpoint should be called whenever a profile is updated.
+    
+    Request Body:
+    {
+        "token": "user_auth_token"  # Optional, if not provided will use request.user
+    }
+    
+    Response:
+    {
+        "message": "Profile embeddings updated successfully",
+        "embeddings": {
+            "profile": [...],
+            "skills": [...],
+            "experience": [...],
+            "projects": [...],
+            "education": [...],
+            "location": [...],
+            "additional": [...]
+        }
+    }
     """
     try:
-        candidate = Candidate.objects.get(user=request.user)
-        update_profile_embeddings(candidate.id)
+        # Get token from request body or use authenticated user
+        token = request.data.get('token')
+        if token:
+            user = Token.objects.get(key=token).user
+        else:
+            user = request.user
+
+        # Get candidate profile
+        candidate = Candidate.objects.select_related('user').get(user=user)
+        
+        # Generate new embeddings
+        embedding_manager = ProfileEmbeddingManager()
+        embeddings = embedding_manager.generate_embeddings(candidate)
+        
+        # Add to index
+        embedding_manager.add_to_index(candidate)
+        
         return Response({
-            'message': 'Profile embeddings updated successfully'
+            'message': 'Profile embeddings updated successfully',
+            'embeddings': {
+                'profile': embeddings['profile_embedding'],
+                'skills': embeddings['skills_embedding'],
+                'experience': embeddings['experience_embedding'],
+                'projects': embeddings['projects_embedding'],
+                'education': embeddings['education_embedding'],
+                'location': embeddings['location_embedding'],
+                'additional': embeddings['additional_embedding']
+            }
         })
+    except Token.DoesNotExist:
+        return Response({
+            'error': 'Invalid token'
+        }, status=status.HTTP_401_UNAUTHORIZED)
     except Candidate.DoesNotExist:
         return Response({
             'error': 'Candidate profile not found'
@@ -27,18 +75,20 @@ def update_embeddings(request):
             'error': f'Error updating embeddings: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@api_view(['POST'])
 def search_similar_profiles(request):
     """
     Search for similar profiles based on a query.
-    Query parameter 'q' should contain the search text or full job description.
-    Optional parameter 'k' specifies the number of results (default: 10).
+    Request Body:
+    {
+        "q": "search text or job description",
+        "k": 10  # optional, default 10
+    }
     Returns results with weighted scores for different aspects of the profile.
     """
-    query = request.query_params.get('q')
+    query = request.data.get('q')
     try:
-        k = int(request.query_params.get('k', 10))
+        k = int(request.data.get('k', 10))
     except ValueError:
         return Response({
             'error': 'Invalid value for parameter "k". Must be a number.'
@@ -46,7 +96,7 @@ def search_similar_profiles(request):
 
     if not query:
         return Response({
-            'error': 'Query parameter "q" is required'
+            'error': 'Field "q" is required in the request body.'
         }, status=status.HTTP_400_BAD_REQUEST)
 
     try:
@@ -73,14 +123,18 @@ def search_similar_profiles(request):
                     'skills': result['aspect_scores'].get('skills', 0),
                     'experience': result['aspect_scores'].get('experience', 0),
                     'projects': result['aspect_scores'].get('projects', 0),
-                    'location': result['aspect_scores'].get('location', 0)
+                    'education': result['aspect_scores'].get('education', 0),
+                    'location': result['aspect_scores'].get('location', 0),
+                    'additional': result['aspect_scores'].get('additional', 0)
                 },
                 'aspect_queries': {
                     'profile': result['aspect_queries'].get('profile', ''),
                     'skills': result['aspect_queries'].get('skills', ''),
                     'experience': result['aspect_queries'].get('experience', ''),
                     'projects': result['aspect_queries'].get('projects', ''),
-                    'location': result['aspect_queries'].get('location', '')
+                    'education': result['aspect_queries'].get('education', ''),
+                    'location': result['aspect_queries'].get('location', ''),
+                    'additional': result['aspect_queries'].get('additional', '')
                 },
                 'user_token': result.get('user_token')
             }
@@ -91,11 +145,13 @@ def search_similar_profiles(request):
             'query': query,
             'count': len(formatted_results),
             'weights': {
-                'profile': 0.3,
-                'skills': 0.3,
+                'profile': 0.2,
+                'skills': 0.25,
                 'experience': 0.2,
-                'projects': 0.1,
-                'location': 0.1
+                'projects': 0.15,
+                'education': 0.1,
+                'location': 0.05,
+                'additional': 0.05
             }
         })
     except ValueError as ve:

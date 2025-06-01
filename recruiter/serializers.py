@@ -107,7 +107,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ('id', 'name', 'created_at', 'updated_at')
+        fields = ('id', 'name', 'description', 'head_count', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at')
 
     def create(self, validated_data):
@@ -117,7 +117,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class ActiveRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActiveRole
-        fields = ('id', 'name', 'created_at', 'updated_at')
+        fields = ('id', 'title', 'department', 'level', 'status', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at')
 
     def create(self, validated_data):
